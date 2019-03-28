@@ -4,11 +4,14 @@ const db = require('./db');
 
 const server = createServer();
 
-server.start({
-  cors: {
-    credencials: true,
-    origin: process.env.FRONTEND_URL
+server.start(
+  {
+    cors: {
+      credentials: true,
+      origin: process.env.FRONTEND_URL,
+    },
+  },
+  deets => {
+    console.log(`Server is now running on port http://localhost:${deets.port}`);
   }
-}, seets => {
-  console.log('server running');
-})
+);
