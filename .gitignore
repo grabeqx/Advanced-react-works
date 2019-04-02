@@ -13,3 +13,4 @@ frontend/.vscode
 /frontend/variables.env
 /frontend/.build/
 /backend/variables.env
+secured.js

@@ -6,6 +6,7 @@ import Router from 'next/router';
 import Form from './styles/Form';
 import formatMoney from '../lib/formatMoney';
 import Error from './ErrorMessage';
+import secured from '../secured';
 
 const CREATE_ITEM_MUTATION = gql`
   mutation CREATE_ITEM_MUTATION(
@@ -45,6 +46,22 @@ class CreateItem extends Component {
     })
   }
 
+  uploadFile = async (e) => {
+    const files = e.target.files;
+    const data = new FormData();
+    data.append('file', files[0]);
+    data.append('upload_preset', 'sickfites');
+    const res = await fetch(secured.imageAPI, {
+      method: 'POST',
+      body: data
+    });
+    const file = await res.json();
+    this.setState({
+      image: file.secure_url,
+      largeImage: file.eager[0].secure_url
+    })
+  }
+
   render() {
     return (
       <Mutation mutation={CREATE_ITEM_MUTATION} variables={this.state}>
@@ -59,6 +76,11 @@ class CreateItem extends Component {
             }}>
               <Error error={error} />
               <fieldset disabled={loading} aria-busy={loading}>
+                <label htmlFor="file">
+                  Image
+                  <input type="file" id="file" name="file" placeholder="Upload an image" required onChange={this.uploadFile}/>
+                  {this.state.image && <img src={this.state.image} width="200" alt="preview image" />}
+                </label>
                 <label htmlFor="title">
                   Title
                   <input type="text" id="title" name="title" placeholder="Title" required value={this.state.title} onChange={this.handleChange}/>
