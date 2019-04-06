@@ -1,5 +1,7 @@
-import SignUp from '../components/SignUp';
 import styled from 'styled-components';
+
+import SignUp from '../components/SignUp';
+import SignIn from '../components/Signin';
 
 const Columns = styled.div`
   display: grid;
@@ -11,8 +13,7 @@ const signup = (props) => {
   return (
     <Columns>
       <SignUp />
-      <SignUp />
-      <SignUp />
+      <SignIn />
     </Columns>
   )
 }
