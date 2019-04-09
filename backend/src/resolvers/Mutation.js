@@ -2,12 +2,22 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const {randomBytes} = require('crypto');
 const {promisify} = require('util');
+const {transport, makeNiceEmial} = require('../mail');
 
 const Mutations = {
   async createItem(parent, args, ctx, info) {
-
+    if(!ctx.request.userId) {
+      throw new Error('please login');
+    }
     const item = await ctx.db.mutation.createItem({
-      data: {...args}
+      data: {
+        user: {
+          connect: {
+            id: ctx.request.userId
+          }
+        },
+        ...args
+      }
     }, info);
     
     return item;
@@ -75,6 +85,14 @@ const Mutations = {
       where: {email: args.email},
       data: {resetToken, resetTokenExpiry}
     });
+
+    const mailRes = await transport.sendMail({
+      from: 'test@test.com',
+      to: user.email,
+      subject: 'Password reset',
+      html: makeNiceEmial('Your password reset <a href="'+process.env.FRONTEND_URL+'/reset?resetToken='+resetToken+'">Link</a>')
+    });
+
     return {message: 'ok'}
   },
   async resetPassword(parent, args, ctx, info) {
